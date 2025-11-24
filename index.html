@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movies</title>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans p-6" x-data="init()">
+
+  <!-- Site Title -->
+  <div class="flex justify-center items-center h-full">
+    <button class="text-4xl" @click="all = true">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-100" x-text="name"></h1>
+    </button>
+  </div>
+
+  <hr class="border-gray-600 my-6">
+
+
+  <div x-show="all">
+        <!-- Search Bar -->
+    <div class="max-w-4xl mx-auto mb-8 flex gap-3">
+        <input type="text" x-model="title" placeholder="Search for a movie..."  @keydown.enter="GetMovies(), page=1" 
+            class="flex-1 px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+        <button @click="GetMovies(), page=1" 
+                class="px-6 py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition">
+        Search
+        </button>
+        <button @click="page--, GetMovies()" 
+                class="px-6 py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition">
+        <
+        </button>
+        <button @click="page++, GetMovies()" 
+                class="px-6 py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition">
+        >
+        </button>
+    </div>
+
+    <!-- Movies List -->
+    <div x-show="t">
+        <ul class="max-w-4xl mx-auto space-y-6">
+        <template x-for="m in movies" : key="m.imdbID || index">
+            <li class="w-full">
+                <button @click="all = false, id=m.imdbID, GetMovie()"class="w-full bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row hover:shadow-gray-700 transition transform hover:scale-[1.02]">
+                    <img :src="m?.Poster" alt="" class="w-full md:w-1/3 object-cover" @error="event.target.src='noPic.png'">
+                    <div class="p-4 flex-1 flex flex-col justify-center">
+                        <h2 class="text-2xl font-semibold mb-2" x-text="m?.Title"></h2>
+                        <p class="text-gray-400 mb-1" x-text="m.Year+ '- ' +m.Type"></p>
+                        <p class="text-gray-400 mb-1" x-text=""></p>
+                    </div>
+                </button>
+            </li>
+        </template>
+    </ul>
+    </div>
+    <div x-show="!t">
+         <h2 class="text-3xl font-bold text-center mb-8 text-gray-100"> Welcome to mine movie finder </h2>
+         <p class="  text-center mb-8 text-gray-100">This is a project form me. Quidon Roethof, A software developer.</p>
+         <p class="  text-center mb-8 text-gray-100">To show that I know how javascript, html, tailwind, alpineJs and Apis</p>
+         <p class="  text-center mb-8 text-gray-400">Disclaimer I use I AI to style it and help me bug fix becuese I am shit in tailwind</p>
+         <p class="  text-center mb-8 text-gray-400">I use <a href="http://www.omdbapi.com/apikey.aspx">OMDd api</a> as api</p>
+        </button>
+    </div>
+  <div x-show="t">
+        <button @click="page--, GetMovies()" 
+                class="px-6 py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition">
+        <
+        </button>
+        <button @click="page++, GetMovies()" 
+                class="px-6 py-3 bg-blue-600 rounded-lg text-white font-bold hover:bg-blue-700 transition">
+        >
+        </button>
+    </div>
+  </div>
+  
+
+  <div x-show="!all" class="max-w-9xl mx-auto bg-gray-900 rounded-xl shadow-lg p-6 text-gray-100 space-y-6">
+
+    <div class="flex w-full justify-center items-center ">
+        <!-- Column 1: Movie Details -->
+        <div class=" bg-gray-800 p-4 rounded">
+            <!-- Movie Title -->
+            <h1 class="text-4xl font-bold text-center text-white" x-text="movie?.Title"></h1>
+
+            <!-- Basic Info -->
+            <p class="text-center text-gray-400">
+            <span x-text="movie.Released"></span> &bull; 
+            <span x-text="movie.Runtime"></span> &bull; 
+            <span x-text="movie.Genre"></span>
+            </p>
+
+            <!-- Poster with Rating Overlay -->
+            <div class="relative flex justify-center">
+                <img :src="movie.Poster"  alt="" class="w-full max-w-md rounded-lg shadow-md" @error="event.target.src='noPic.png'">
+
+            <span class="absolute top-2 left-19 bg-yellow-400 text-black font-bold px-3 py-1 rounded-lg shadow-md"
+                    x-text="movie.Rated"></span>
+            </div>
+
+            <!-- Plot -->
+            <p class="text-center text-gray-300 italic mt-4" x-text="movie.Plot"></p>
+
+            <!-- Info Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-400 text-sm mt-4">
+            <div><span class="font-semibold text-white">Awards:</span> <span x-text="movie.Awards"></span></div>
+            <div><span class="font-semibold text-white">Type:</span> <span x-text="movie.Type"></span></div>
+            <div><span class="font-semibold text-white">IMDB Rating:</span> <span x-text="movie.imdbRating"></span></div>
+            <div><span class="font-semibold text-white">Box Office:</span> <span x-text="movie.BoxOffice"></span></div>
+            <div><span class="font-semibold text-white">Director:</span> <span x-text="movie.Director"></span></div>
+            <div><span class="font-semibold text-white">Writer:</span> <span x-text="movie.Writer"></span></div>
+            <div><span class="font-semibold text-white">Actors:</span> <span x-text="movie.Actors"></span></div>
+            <div><span class="font-semibold text-white">Language:</span> <span x-text="movie.Language"></span></div>
+            <div><span class="font-semibold text-white">Country:</span> <span x-text="movie.Country"></span></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+
+<script>
+function init(){
+    return {
+        name: "QR MOVIE FINDER",
+        apiKey: "ZmJjZTljOWE=",
+        title:"",
+        t:"",
+        id:"tt3896198",
+        page:1,
+        all:true,
+        movies:[],
+        movie:null,
+
+        async GetMovie(){
+            try{
+            this.all = false;
+            const response = await fetch ('http://www.omdbapi.com/?i=' + this.id + '&plot=full&r=json&apikey=' + atob(this.apiKey) +'');
+            const data = await response.json();
+            this.movie = data;
+            }
+             catch (err) {
+                console.error(err);
+            }
+        },
+
+        Sett(){
+            this.all =false;
+            this.id= 'm.imdbID';
+        },
+        
+        async GetMovies(){
+            if(this.page == 0)
+                this.page = 1;
+            console.log("f" +this.title);   
+            this.t = "f";
+            t = this.title;
+                    if(this.title != "" || this.title!= null){
+                        const response = await fetch('http://www.omdbapi.com/?s=' + t + '&r=json&page=' + this.page +'&apikey=' + atob(this.apiKey) +'')
+                        const data = await response.json();
+                            if(data.Search) {
+                                this.movies = data.Search;
+                            } else {
+                                this.t = "";
+                                this.movies =[];
+                            }
+            }
+        }
+    }
+}
+</script>
+</html>
